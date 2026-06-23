@@ -19,4 +19,10 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\TestPS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\shaders\TestVS.hlsl" />
+  </ItemGroup>
 </Project>
