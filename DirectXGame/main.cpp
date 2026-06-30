@@ -1,6 +1,10 @@
 #include "KamataEngine.h"
 #include <d3dcompiler.h>
 using namespace KamataEngine;
+
+//関数プロトタイプ宣言
+ID3DBlob* CompileShader(const std::wstring& filePath, const std::string& shaderModel);
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Initialize(L"LE3D_06_オオツカ_マモル");
 	
@@ -39,27 +43,33 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
-	ID3DBlob* vsBlob = nullptr;
-	ID3DBlob* psBlob = nullptr;
-	std::wstring vsFile = L"Resources/shaders/TestVS.hlsl";
-	hr = D3DCompileFromFile(vsFile.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DFCI_BIASED_FIXED_2_8 | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &vsBlob, &errorBlob);
-	if (FAILED(hr)) {
-		DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
-		if (errorBlob) {
-			DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-		}
-		assert(false);
-	}
+	// 頂点シェーダーのyp見込みとコンパイル
+	ID3DBlob* vsBlob = CompileShader(L"Resources/shaders/TestVS.hlsl", "vs_5_0");
+	assert(vsBlob != nullptr);
 
-	std::wstring psFile = L"Resources/shaders/TestPS.hlsl";
-	hr = D3DCompileFromFile(psFile.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", D3DFCI_BIASED_FIXED_2_8 | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &psBlob, &errorBlob);
-	if (FAILED(hr)) {
-		DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
-		if (errorBlob) {
-			DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-		}
-		assert(false);
-	}
+	// ピクセルシェーダーの読み込みとコンパイル
+	ID3DBlob* psBlob = CompileShader(L"Resources/shaders/TestPS.hlsl", "ps_5_0");
+	assert(psBlob != nullptr);
+
+	//std::wstring vsFile = L"Resources/shaders/TestVS.hlsl";
+	//hr = D3DCompileFromFile(vsFile.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DFCI_BIASED_FIXED_2_8 | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &vsBlob, &errorBlob);
+	//if (FAILED(hr)) {
+	//	DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
+	//	if (errorBlob) {
+	//		DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+	//	}
+	//	assert(false);
+	//}
+
+	//std::wstring psFile = L"Resources/shaders/TestPS.hlsl";
+	//hr = D3DCompileFromFile(psFile.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", D3DFCI_BIASED_FIXED_2_8 | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &psBlob, &errorBlob);
+	//if (FAILED(hr)) {
+	//	DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
+	//	if (errorBlob) {
+	//		DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+	//	}
+	//	assert(false);
+	//}
 
 	//PSOの作成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -78,7 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ID3D12PipelineState* graphicsPipeLineState = nullptr;
 	hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipeLineState));
 	assert(SUCCEEDED(hr));
-	
+
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -151,9 +161,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	vertexResource->Release();
 	graphicsPipeLineState->Release();
 	signatureBlob->Release();
-	if (errorBlob) {
-		errorBlob->Release();
-	}
+	//if (errorBlob) {
+	//	errorBlob->Release();
+	//}
 	rootSignature->Release();
 	vsBlob->Release();
 	psBlob->Release();
@@ -162,4 +172,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Finalize();
 	return 0;
 }
-	    
+//シェーダーコンパイル関数  
+// filePath:シェーダーモデルのパス
+//shaderModel:シェーダーモデル
+ID3DBlob* CompileShader(const std::wstring& filePath, const std::string& shaderModel) 
+{
+	ID3DBlob* shaderBlob = nullptr;
+	ID3DBlob* errorBlob = nullptr;
+	HRESULT hr =
+	    D3DCompileFromFile(
+		filePath.c_str(), 
+		nullptr, 
+		D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", shaderModel.c_str(), D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 
+		0, &shaderBlob, &errorBlob);
+	//エラーが発生した場合、止める
+	if (FAILED(hr)) {
+		if (errorBlob) {
+			OutputDebugStringA(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+			errorBlob->Release();
+		}
+		assert(false);
+	}
+	//生成したshaderBlobを返す
+	return shaderBlob;
+}
