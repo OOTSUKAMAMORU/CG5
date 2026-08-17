@@ -1,5 +1,4 @@
 #include "KamataEngine.h"
-//#include <d3dcompiler.h>
 #include"Shader.h"
 #include<Windows.h>
 #include <cassert>
@@ -51,15 +50,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Shader vs;
 	vs.Load(L"Resources/shaders/TestVS.hlsl", "vs_5_0");
 	assert(vs.GetBlob() != nullptr);
-	//ID3DBlob* vsBlob = CompileShader(L"Resources/shaders/TestVS.hlsl", "vs_5_0");
-	//assert(vsBlob != nullptr);
 
 	// ピクセルシェーダーの読み込みとコンパイル
 	Shader ps;
 	ps.Load(L"Resources/shaders/TestPS.hlsl", "ps_5_0");
 	assert(ps.GetBlob() != nullptr);
-	//ID3DBlob* psBlob = CompileShader(L"Resources/shaders/TestPS.hlsl", "ps_5_0");
-	//assert(psBlob != nullptr);
 
 	//PSOの作成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -151,38 +146,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	vertexResource->Release();
 	graphicsPipeLineState->Release();
 	signatureBlob->Release();
-	//if (errorBlob) {
-	//	errorBlob->Release();
-	//}
-	rootSignature->Release();
-	//vsBlob->Release();
-	//psBlob->Release();
 
+	rootSignature->Release();
+	
 	//エンジンの終了処理
 	KamataEngine::Finalize();
 	return 0;
 }
-//シェーダーコンパイル関数  
-// filePath:シェーダーモデルのパス
-//shaderModel:シェーダーモデル
-//D3DBlob* CompileShader(const std::wstring& filePath, const std::string& shaderModel) 
-//
-//	ID3DBlob* shaderBlob = nullptr;
-//	ID3DBlob* errorBlob = nullptr;
-//	HRESULT hr =
-//	    D3DCompileFromFile(
-//		filePath.c_str(), 
-//		nullptr, 
-//		D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", shaderModel.c_str(), D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 
-//		0, &shaderBlob, &errorBlob);
-//	//エラーが発生した場合、止める
-//	if (FAILED(hr)) {
-//		if (errorBlob) {
-//			OutputDebugStringA(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-//			errorBlob->Release();
-//		}
-//		assert(false);
-//	}
-//	//生成したshaderBlobを返す
-//	return shaderBlob;
-//
