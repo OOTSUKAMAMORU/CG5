@@ -183,7 +183,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->RSSetScissorRects(1, &scissorRect);
 
 		commandList->ClearRenderTargetView(rtvHandleCPU, kRenderTargetClearColor, 0, nullptr);
-		commandList->ClearDepthStencilView(rtvHandleCPU, D3D12_CLEAR_FLAG_DEPTH, 1.0f,0,0, nullptr);
+		commandList->ClearDepthStencilView(dsvHandleCPU, D3D12_CLEAR_FLAG_DEPTH, 1.0f,0,0, nullptr);
 
 		//描画
 
