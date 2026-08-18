@@ -38,15 +38,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	struct VertexData {
 		Vector4 position;
+		Vector2 texcoord;
 	};
 
 	//頂点リソースにデータを書き込む
 	// Vector4* vertexData = nullptr;
 	VertexData vertices[] = {
-		{ -1.0f, 1.0f, 0.0f, 1.0f}, 
-	    { 1.0f,  1.0f, 0.0f, 1.0f}, 
-		{ 1.0f, -1.0f, 0.0f, 1.0f},
-	    {-1.0f, -1.0f, 0.0f, 1.0f},
+		{{-1.0f,  1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+		{{ 1.0f,  1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+		{{ 1.0f, -1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		{{-1.0f, -1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
 	};
 
 	VertexBuffer vb;
@@ -101,19 +102,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	return 0;
 }
 void SetupPipelineState(PipelineState& pipelineState, RootSignature& rs, Shader& vs, Shader& ps) {
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[1] = {};
+	
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	
+	inputElementDescs[1].SemanticName = "TEXCOORD";
+	inputElementDescs[1].SemanticIndex = 0;
+	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
+	
 	D3D12_BLEND_DESC blendDesc{};
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	
 	D3D12_RASTERIZER_DESC resterizerDesc{};
 	resterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	resterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+	
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rs.Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
