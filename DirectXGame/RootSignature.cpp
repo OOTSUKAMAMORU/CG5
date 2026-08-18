@@ -29,7 +29,7 @@ void RootSignature::Create() {
 	rootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(srvDescRange);
 
 	descriptionRootSignaturature.pParameters = rootParameters;
-	descriptionRootSignaturature.NumStaticSamplers = _countof(rootParameters);
+	descriptionRootSignaturature.NumParameters = _countof(rootParameters);
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
 	staticSamplers[0].Filter = D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
