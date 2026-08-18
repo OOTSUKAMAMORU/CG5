@@ -6,6 +6,7 @@ using namespace KamataEngine;
 
 void PipelineState::Create(D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc) { 
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+
 	ID3D12PipelineState* graphicsPipeLineState = nullptr;
 	[[maybe_unused]] HRESULT hr = dxCommon->GetDevice()->CreateGraphicsPipelineState(
 		&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipeLineState));
